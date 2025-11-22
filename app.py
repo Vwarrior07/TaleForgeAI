@@ -34,11 +34,38 @@ story_length = st.selectbox(
     index=1
 )
 
+# Style selector
+story_style = st.selectbox(
+    "Select story style:",
+    [
+        "Fantasy ✨",
+        "Romance ❤️",
+        "Horror 👻",
+        "Comedy 😂",
+        "Sci-Fi 🚀",
+        "Kids Story 🧸",
+        "Mythology 🐉"
+    ],
+    index=0
+)
+
+
 # Mapping length to instructions
 length_map = {
     "Short (5–7 sentences)": "Write a short story of about 5–7 sentences.",
     "Medium (3–5 paragraphs)": "Write a medium-length story of about 3–5 paragraphs.",
     "Long (8–12 paragraphs)": "Write a long, detailed story of about 8–12 paragraphs."
+}
+
+# Mapping style to instructions
+style_map = {
+    "Fantasy ✨": "Write the story in a magical, mythical fantasy style with imaginative world-building.",
+    "Romance ❤️": "Write the story in an emotional, heartfelt romantic tone.",
+    "Horror 👻": "Write the story in a chilling, dark, suspenseful horror tone.",
+    "Comedy 😂": "Write the story in a light-hearted, humorous, funny tone.",
+    "Sci-Fi 🚀": "Write the story in a futuristic, scientific, high-tech science fiction tone.",
+    "Kids Story 🧸": "Write the story in a simple, cheerful, kid-friendly tone with easy vocabulary.",
+    "Mythology 🐉": "Write the story in an epic, legendary, mythological tone inspired by ancient tales."
 }
 
 length_instruction = length_map[story_length]
@@ -70,7 +97,8 @@ if st.button("Generate Story"):
         """
 
         with st.spinner("Forging your tale... 🔥"):
-            response = model.generate_content(story_prompt)
+            full_prompt = f"{prompt}\n\n{length_instruction}\n{style_map[story_style]}"
+            response = model.generate_content(full_prompt)
             story = response.text
 
         st.subheader("✨ Your Story")

@@ -11,6 +11,7 @@ configure(api_key=api_key)
 # Model
 model = GenerativeModel("models/gemini-2.0-flash")
 
+
 # UI Setup
 st.set_page_config(page_title="TaleForge AI", page_icon="📚")
 st.title("📚 TaleForge AI – AI Story Generator")
@@ -49,6 +50,9 @@ story_style = st.selectbox(
     index=0
 )
 
+# Option to generate Title + Summary
+generate_title = st.checkbox("Generate a Story Title & Summary", value=True)
+
 
 # Mapping length to instructions
 length_map = {
@@ -63,12 +67,24 @@ style_map = {
     "Romance ❤️": "Write the story in an emotional, heartfelt romantic tone.",
     "Horror 👻": "Write the story in a chilling, dark, suspenseful horror tone.",
     "Comedy 😂": "Write the story in a light-hearted, humorous, funny tone.",
-    "Sci-Fi 🚀": "Write the story in a futuristic, scientific, high-tech science fiction tone.",
+    "Sci-Fi 🚀": "Write the story in a futuristic, high-tech science fiction tone.",
     "Kids Story 🧸": "Write the story in a simple, cheerful, kid-friendly tone with easy vocabulary.",
     "Mythology 🐉": "Write the story in an epic, legendary, mythological tone inspired by ancient tales."
 }
 
 length_instruction = length_map[story_length]
+style_instruction = style_map[story_style]
+
+# Title + Summary instruction
+title_instruction = """
+After writing the story, also generate:
+Title: A short, creative, catchy story title.
+Summary: A brief 2–3 sentence summary of the story.
+"""
+
+if not generate_title:
+    title_instruction = ""
+
 
 # Generate story button
 if st.button("Generate Story"):
@@ -76,28 +92,31 @@ if st.button("Generate Story"):
         st.warning("Please enter a prompt before generating a story.")
     else:
 
-        story_prompt = f"""
+        full_prompt = f"""
         You are an expert creative storyteller.
-
         Your ONLY job is to write a narrative story.
         Do NOT ask the user questions.
         Do NOT request more details.
         Do NOT generate bullet points.
         Do NOT analyze or explain anything.
-
-        Story Requirements:
+        Do NOT break format unless needed for story flow.
+        Story Rules:
         - {length_instruction}
+        - {style_instruction}
         - Use immersive, emotional, descriptive language.
-        - Maintain natural flow and storytelling structure.
+        - Maintain natural storytelling structure.
         - If character names are missing, create suitable names automatically.
         - Make it engaging and vivid.
+        - Do NOT ask the user questions.
 
-        Write the full story based on this prompt:
-        "{prompt}"
+        {title_instruction}
+
+        User prompt: "{prompt}"
+
+        Generate the story now.
         """
 
         with st.spinner("Forging your tale... 🔥"):
-            full_prompt = f"{prompt}\n\n{length_instruction}\n{style_map[story_style]}"
             response = model.generate_content(full_prompt)
             story = response.text
 

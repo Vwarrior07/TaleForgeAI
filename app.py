@@ -5,7 +5,8 @@ import os
 
 # Load API key
 load_dotenv()
-api_key = os.getenv("GOOGLE_API_KEY")
+#api_key = os.getenv("GOOGLE_API_KEY")
+api_key = st.secrets["GOOGLE_API_KEY"]
 configure(api_key=api_key)
 
 # Model
